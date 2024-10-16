@@ -4,7 +4,7 @@
 #' interactions terms that will be used to compute the treatment effects
 #' @param coeVec the estimates of fixed effects of the linear mixed-effects model
 #' @param varMatrix the variance matrix of the estimates of the fixed effects
-#' @return
+#' @return  a list for which the first one is from model while the second one is from origin approach
 contrast=function(sele,coeVec,varMatrix){
 ## sele is a list of length 2 each of whose components is a vector specifying which entries have to be selected
 ## coeVec gives the estimated coefficient with the first element representing

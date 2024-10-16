@@ -12,3 +12,12 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.1
+Depends: 
+    R (>= 2.10),
+    ggplot2 (>= 3.5.1),
+    nlme (>= 3.1),
+    VCA (>= 1.5.1)
+Suggests: 
+    knitr (>= 1.46),
+    rmarkdown (>= 2.26)
+VignetteBuilder: knitr (>= 1.46)

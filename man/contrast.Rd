@@ -14,6 +14,9 @@ interactions terms that will be used to compute the treatment effects}
 
 \item{varMatrix}{the variance matrix of the estimates of the fixed effects}
 }
+\value{
+a list for which the first one is from model while the second one is from origin approach
+}
 \description{
 Compute the treatment effects
 }

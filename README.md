@@ -15,5 +15,7 @@ You can install the development version of danovir from [GitHub](https://github.
 devtools::install_github("jiezhou-2/danovir")
 ```
 
+For more details about the package, please visit the GitHub page, https://jiezhou-2.github.io/danovir/
+
 
 

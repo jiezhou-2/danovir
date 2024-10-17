@@ -104,16 +104,37 @@ dataset$treatment=as.factor(dataset$treatment)
 
 The basic model in *danovir* is the following one,
 
-$$response_{ijk}=\mu+\alpha_j+\beta_k+\lambda_l+\gamma_{jl$+\gamma_{kl}+e_{ijk}$$
+$$response_{ijk}=\mu+\alpha_j+\beta_k+\lambda_l+\gamma_{jl}+\gamma_{kl}+
+u_i+e_{ijk}$$
+Here the meanings of the terms are, respectively, 
+
+- $\mu$, the intercept
+- $\alpha_j$, the main antigen effects
+- $\beta_k$, the main antibody effects,
+- $\lambda_l$, the main treatment effects
+- $\gamma_{jl}$, the interaction between treatment and antigen
+- $\gamma_{kl}$, the interaction between treatment and antibody
+- $u_i$, the random intercept for subject $i$
+- $e_{ijk}$, the error term
 
 
-Here the data frame *dataset* is a subset from a large clinical trial which includes two arms,  *NP* for non-pregnant women and *P15* for pregnant women. Both arms received the same type of influenza vaccine shot. In this subset, each arm includes 10 subjects. The aims of the study is to find if pregnant women and non-pregent women have systematic difference in terms of  their state of immune system and immune response. Here for the purpose of demonstration, we use a model with antigen:antibody effects and random antigen/antibody effects.  
+There are four additional terms that are optional which should be chosen by users. These choices should be made based on the characteristics of the data at hand. These four terms are, respectively,
+
+- Interaction between antigen and antibody, $\gamma_{jk}$
+- Interaction between treatment, antigen and antibody, $\gamma_{jkl}$
+- Random antigen effects, $u_{ij}$
+- Random antibody effects,$u_{ik}$
+
+
+The data frame *dataset* coming with the package is a subset adapted from a large clinical trial which includes two arms,  *NP* for non-pregnant women and *P15* for pregnant women. Both arms received the same type of influenza vaccine shot. In this subset, each arm includes 10 subjects. The aims of the study is to find if pregnant women and non-pregent women have systematic difference in terms of  their state of immune system and immune response. Here for the purpose of demonstration, we use a model with antigen:antibody effects and random antigen/antibody effects.  
 
 ```{r,message=FALSE}
 results=danovir(data=dataset,covariate=c("assay"),type = c(1,0,1,1),control = control)
 ```
 
+which corresponds to the following mixed-effects model, 
 
+$$response_{ijk}=\mu+\alpha_j+\beta_k+\lambda_l+\gamma_{jl}+\gamma_{kl}+\gamma_{jk}+u_i+u_{ij}+u_{ik}+e_{ijk}$$
 
 #### model-based volcano
 

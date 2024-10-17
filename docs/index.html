@@ -363,16 +363,48 @@ for w/o random antibody effects.</p>
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:nlme&#39;:</span></span>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt;     fixef, isBalanced, ranef</span></span></code></pre></div>
-<p>Here the data frame <em>dataset</em> is a subset from a large
-clinical trial which includes two arms, <em>NP</em> for non-pregnant
-women and <em>P15</em> for pregnant women. Both arms received the same
-type of influenza vaccine shot. In this subset, each arm includes 10
-subjects. The aims of the study is to find if pregnant women and
-non-pregent women have systematic difference in terms of their state of
-immune system and immune response. Here for the purpose of
+<p>The basic model in <em>danovir</em> is the following one,</p>
+<p><span class="math display">\[response_{ijk}=\mu+\alpha_j+\beta_k+\lambda_l+\gamma_{jl}+\gamma_{kl}+
+u_i+e_{ijk}\]</span> Here the meanings of the terms are,
+respectively,</p>
+<ul>
+<li><span class="math inline">\(\mu\)</span>, the intercept</li>
+<li><span class="math inline">\(\alpha_j\)</span>, the main antigen
+effects</li>
+<li><span class="math inline">\(\beta_k\)</span>, the main antibody
+effects,</li>
+<li><span class="math inline">\(\lambda_l\)</span>, the main treatment
+effects</li>
+<li><span class="math inline">\(\gamma_{jl}\)</span>, the interaction
+between treatment and antigen</li>
+<li><span class="math inline">\(\gamma_{kl}\)</span>, the interaction
+between treatment and antibody</li>
+<li><span class="math inline">\(u_i\)</span>, the random intercept for
+subject <span class="math inline">\(i\)</span></li>
+<li><span class="math inline">\(e_{ijk}\)</span>, the error term</li>
+</ul>
+<p>There are four additional terms that are optional which should be
+chosen by users. These choices should be made based on the
+characteristics of the data at hand. These four terms are,
+respectively,</p>
+<ul>
+<li>Interaction between antigen and antibody, <span class="math inline">\(\gamma_{jk}\)</span></li>
+<li>Interaction between treatment, antigen and antibody, <span class="math inline">\(\gamma_{jkl}\)</span></li>
+<li>Random antigen effects, <span class="math inline">\(u_{ij}\)</span></li>
+<li>Random antibody effects,<span class="math inline">\(u_{ik}\)</span></li>
+</ul>
+<p>The data frame <em>dataset</em> coming with the package is a subset
+adapted from a large clinical trial which includes two arms, <em>NP</em>
+for non-pregnant women and <em>P15</em> for pregnant women. Both arms
+received the same type of influenza vaccine shot. In this subset, each
+arm includes 10 subjects. The aims of the study is to find if pregnant
+women and non-pregent women have systematic difference in terms of their
+state of immune system and immune response. Here for the purpose of
 demonstration, we use a model with antigen:antibody effects and random
 antigen/antibody effects.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>results<span class="ot">=</span><span class="fu">danovir</span>(<span class="at">data=</span>dataset,<span class="at">covariate=</span><span class="fu">c</span>(<span class="st">&quot;assay&quot;</span>),<span class="at">type =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>),<span class="at">control =</span> control)</span></code></pre></div>
+<p>which corresponds to the following mixed-effects model,</p>
+<p><span class="math display">\[response_{ijk}=\mu+\alpha_j+\beta_k+\lambda_l+\gamma_{jl}+\gamma_{kl}+\gamma_{jk}+u_i+u_{ij}+u_{ik}+e_{ijk}\]</span></p>
 <div id="model-based-volcano" class="section level4">
 <h4>model-based volcano</h4>
 <pre><code>#&gt;    antigen  antibody      effects   variance      pvalue        fdr

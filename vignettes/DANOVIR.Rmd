@@ -105,7 +105,7 @@ dataset$treatment=as.factor(dataset$treatment)
 Here the data frame *dataset* is a subset from a large clinical trial which includes two arms,  *NP* for non-pregnant women and *P15* for pregnant women. Both arms received the same type of influenza vaccine shot. In this subset, each arm includes 10 subjects. The aims of the study is to find if pregnant women and non-pregent women have systematic difference in terms of  the state of immune system and immune response. Here for the purpose of demonstration, we use a model with antigen:antibody effects and random antigen effects.  
 
 ```{r,message=FALSE}
-results=danovir(data=dataset,covariate=c("assay"),type = c(1,0,1,0),control = control)
+results=danovir(data=dataset,covariate=c("assay"),type = c(1,0,1,1),control = control)
 ```
 
 

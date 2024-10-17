@@ -4,7 +4,7 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of *danovir* is to implement the *danovir* algorithm which is devised to detect the weak signals when traditional approach is not able to detect weak vaccine immune responses. The *danovir* algorithm has been shown to be more powerful than traditional approach especially when sample size is small. 
+The goal of *danovir* is to implement the *danovir* algorithm which is devised to detect weak signals when traditional approach is unable to detect weak vaccine immune responses. In particular, for relatively small sample size data set, *danovir* algorithms has demonstrated more power than traditional approach. 
 
 ## Installation
 

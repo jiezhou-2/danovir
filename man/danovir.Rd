@@ -18,16 +18,66 @@ the second component specifies whether three factor interaction
    \code{antibody} should be included in the random effects.}
 
 \item{covariate}{variables that need to be included in the model}
-
-\item{control}{parameters that will be used in the algorithm}
 }
 \value{
-A list of length 2 in which the first
-component gives the estimates of treatment effects from the model
-while the second component gives the results from tradtional approach
+A \code{danovir} object which is a list of length 3. The first
+component  gives the fitting results of the mixed-effects model;
+the second component gives the model-based estimates of treatment effects,
+while the third component gives the results from traditional approach.
 }
 \description{
 This is the main function of the package. This function outputs the
   denoised estimate of the treatment effects and their variances. The traditional estimates and their variances are also provided which
   can be used to determine how the model based method affects the estimates.
+}
+\details{
+The underlying basic model in the package is
+
+
+\code{response_{ijk}=mu+alpha_j+beta_k+lambda_l+gamma_{jl}+gamma_{kl}+u_i+e_{ijk}}
+
+
+Here the meanings of the terms are, respectively,
+
+
+ - \code{mu}, the intercept
+
+
+  - \code{alpha_j} , the main antigen effects
+
+
+  - \code{beta_k} , the main antibody effects
+
+
+  - \code{lambda_l} , the main treatment effects
+
+
+  - \code{gamma_{jl}} , the interaction between treatment and antigen
+
+
+  - \code{gamma_{kl}} , the interaction between treatment and antibody
+
+
+ - \code{u_i} , the random intercept for subject
+
+
+  - \code{e_{ijk}} , the error term
+
+
+There are four additional terms that are optional which
+should be chosen by users. These choices
+ should be made based on the characteristics
+  of the data at hand. These four terms are, respectively
+
+
+ - \code{gamma_{jk}}, interaction between antigen and antibody
+
+
+ - \code{gamma_{jkl}}, interaction between treatment, antigen and antibody
+
+
+ -  \code{u_{ij}}, random antigen effects
+
+
+ -  \code{u_{ik}}, random antibody effects
 }

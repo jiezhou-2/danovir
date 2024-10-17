@@ -13,11 +13,62 @@
 #'   in the random effects,  and the fourth component specify whether
 #'    \code{antibody} should be included in the random effects.
 #' @param covariate variables that need to be included in the model
-#' @param control parameters that will be used in the algorithm
-#' @return A list of length 2 in which the first
-#' component gives the estimates of treatment effects from the model
-#' while the second component gives the results from tradtional approach
+#' @return A \code{danovir} object which is a list of length 3. The first
+#' component  gives the fitting results of the mixed-effects model;
+#' the second component gives the model-based estimates of treatment effects,
+#' while the third component gives the results from traditional approach.
 #' @export
+#' @details The underlying basic model in the package is
+#'
+#'
+#' \code{response_{ijk}=mu+alpha_j+beta_k+lambda_l+gamma_{jl}+gamma_{kl}+u_i+e_{ijk}}
+#'
+#'
+#' Here the meanings of the terms are, respectively,
+#'
+#'
+#'  - \code{mu}, the intercept
+#'
+#'
+#'   - \code{alpha_j} , the main antigen effects
+#'
+#'
+#'   - \code{beta_k} , the main antibody effects
+#'
+#'
+#'   - \code{lambda_l} , the main treatment effects
+#'
+#'
+#'   - \code{gamma_{jl}} , the interaction between treatment and antigen
+#'
+#'
+#'   - \code{gamma_{kl}} , the interaction between treatment and antibody
+#'
+#'
+#'  - \code{u_i} , the random intercept for subject
+#'
+#'
+#'   - \code{e_{ijk}} , the error term
+#'
+#'
+#' There are four additional terms that are optional which
+#' should be chosen by users. These choices
+#'  should be made based on the characteristics
+#'   of the data at hand. These four terms are, respectively
+#'
+#'
+#'  - \code{gamma_{jk}}, interaction between antigen and antibody
+#'
+#'
+#'  - \code{gamma_{jkl}}, interaction between treatment, antigen and antibody
+#'
+#'
+#'  -  \code{u_{ij}}, random antigen effects
+#'
+#'
+#'  -  \code{u_{ik}}, random antibody effects
+
+
 danovir=function(data,type,covariate,...){
   fullnames=colnames(data)
   if (!all(c("response","subjectid","treatment","antigen","antibody",covariate)
@@ -242,15 +293,14 @@ if (!all(type%in% c(0,1))){stop("Please specify the model in correct way!")}
                          antibody=rep(colnames(bb$effect),rep(nrow(bb$effect),
                                                               ncol(bb$effect))),
                          effects=c(bb$effect),variance=c(bb$variance),pvalue=c(bb$pvalue))
-  #seleFeature1=seleFeature1[order(seleFeature1$pvalue),]
 
 
   seleFeature2=data.frame(antigen=rep(rownames(bb$effect),ncol(bb$effect)),
                           antibody=rep(colnames(bb$effect),rep(nrow(bb$effect),
                                                                ncol(bb$effect))),
                           effects=c(basic),variance=c(vv),pvalue=c(pp))
-  #seleFeature2=seleFeature2[order(seleFeature2$pvalue),]
 
-seleFeature=list(selected=seleFeature1,benchmark=seleFeature2)
+
+seleFeature=list(lmeresults=results,selected=seleFeature1,benchmark=seleFeature2)
 return(seleFeature)
 }

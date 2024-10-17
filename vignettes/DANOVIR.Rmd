@@ -102,6 +102,11 @@ colnames(dataset)[15]="antibody"
 dataset$treatment=as.factor(dataset$treatment)
 ```
 
+The basic model in *danovir* is the following one,
+
+$$response_{ijk}=\mu+\alpha_j+\beta_k+\lambda_l+\gamma_{jl$+\gamma_{kl}+e_{ijk}$$
+
+
 Here the data frame *dataset* is a subset from a large clinical trial which includes two arms,  *NP* for non-pregnant women and *P15* for pregnant women. Both arms received the same type of influenza vaccine shot. In this subset, each arm includes 10 subjects. The aims of the study is to find if pregnant women and non-pregent women have systematic difference in terms of  their state of immune system and immune response. Here for the purpose of demonstration, we use a model with antigen:antibody effects and random antigen/antibody effects.  
 
 ```{r,message=FALSE}

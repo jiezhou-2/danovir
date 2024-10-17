@@ -347,15 +347,14 @@ function is <span class="math inline">\(danovir
 (data,type,covariate)\)</span> where the first argument <em>data</em> is
 a data frame which should include the following named columns
 <em>subjectid, response, antigen, antibody,treatment</em>. Also the
-variables in vector <em>covariate</em> also should be included in
-<em>data</em>. The second argument <em>type</em> specifies the model
-type that need to be fitted. Currently the 16 model types can be fitted
-using <em>danovir</em>, which correspond to <em>type=c(0,0,0,0)</em> to
-<em>type=c(1,1,1,1)</em>. The first 1/0 stands for w/o antigen:antibody
-effects in the model; the second 1/0 stands for w/o
-treatment:antigen:antibody effects; the third 1/0 stands for w/o random
-antigen effects while the fourth 1/0 stands for w/o random antibody
-effects.</p>
+variables in <em>covariate</em> should be included in <em>data</em>. The
+second argument <em>type</em> specifies the model type that need to be
+fitted. Currently there are 16 model types that can be fitted using
+<em>danovir</em>, which correspond to <em>type=c(0,0,0,0)</em>, <span class="math inline">\(\cdots\)</span>, <em>type=c(1,1,1,1)</em>. The
+first 1/0 stands for w/o antigen:antibody effects in the model; the
+second 1/0 stands for w/o treatment:antigen:antibody effects; the third
+1/0 stands for w/o random antigen effects while the fourth 1/0 stands
+for w/o random antibody effects.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(danovir)</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co">#&gt; Loading required package: VCA</span></span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; Warning: package &#39;VCA&#39; was built under R version 4.4.1</span></span>
@@ -369,10 +368,10 @@ clinical trial which includes two arms, <em>NP</em> for non-pregnant
 women and <em>P15</em> for pregnant women. Both arms received the same
 type of influenza vaccine shot. In this subset, each arm includes 10
 subjects. The aims of the study is to find if pregnant women and
-non-pregent women have systematic difference in terms of the state of
+non-pregent women have systematic difference in terms of their state of
 immune system and immune response. Here for the purpose of
 demonstration, we use a model with antigen:antibody effects and random
-antigen effects.</p>
+antigen/antibody effects.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>results<span class="ot">=</span><span class="fu">danovir</span>(<span class="at">data=</span>dataset,<span class="at">covariate=</span><span class="fu">c</span>(<span class="st">&quot;assay&quot;</span>),<span class="at">type =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>),<span class="at">control =</span> control)</span></code></pre></div>
 <div id="model-based-volcano" class="section level4">
 <h4>model-based volcano</h4>

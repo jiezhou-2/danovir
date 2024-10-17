@@ -18,7 +18,7 @@
 #' component gives the estimates of treatment effects from the model
 #' while the second component gives the results from tradtional approach
 #' @export
-danovir=function(data,type,covariate,control,...){
+danovir=function(data,type,covariate,...){
   fullnames=colnames(data)
   if (!all(c("response","subjectid","treatment","antigen","antibody",covariate)
            %in% fullnames)){

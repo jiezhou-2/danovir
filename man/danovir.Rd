@@ -4,7 +4,7 @@
 \alias{danovir}
 \title{Denoised analysis of vaccine-induced immune response}
 \usage{
-danovir(data, type, covariate, control, ...)
+danovir(data, type, covariate, ...)
 }
 \arguments{
 \item{data}{data set that include all the relevant variables}

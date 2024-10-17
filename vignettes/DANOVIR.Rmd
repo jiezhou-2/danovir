@@ -1,5 +1,5 @@
 ---
-title: "DANOVIR"
+title: "Denoised Analysis of Vaccine-induced Immune Response"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{DANOVIR}
@@ -13,6 +13,8 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
+
+The R package *danovir* provides a model-based approach to estimate treatment effects for vaccine immune responses. The main function is $danovir (data,type,covariate)$ where the first argument  *data* is a data frame which should include the following named columns *subjectid, response, antigen, antibody,treatment*. Also the variables in vector *covariate* also should be included in *data*. The second argument *type* specifies the model type that need to be fitted.  Currently the 16 model types can be fitted using *danovir*, which correspond to *type=c(0,0,0,0)* to  *type=c(1,1,1,1)*. The first 1/0 stands for w/o antigen:antibody effects in the model; the second 1/0 stands for w/o treatment:antigen:antibody effects; the third 1/0 stands for w/o random antigen effects while the fourth 1/0 stands for w/o random antibody effects.  
 
 ```{r,echo=FALSE}
 library(nlme)
@@ -100,7 +102,7 @@ colnames(dataset)[15]="antibody"
 dataset$treatment=as.factor(dataset$treatment)
 ```
 
-
+Here the data frame *dataset* is a subset from a large clinical trial which includes two arms,  *NP* for non-pregnant women and *P15* for pregnant women. Both arms received the same type of influenza vaccine shot. In this subset, each arm includes 10 subjects. The aims of the study is to find if pregnant women and non-pregent women have systematic difference in terms of  the state of immune system and immune response. Here for the purpose of demonstration, we use a model with antigen:antibody effects and random antigen effects.  
 
 ```{r,message=FALSE}
 results=danovir(data=dataset,covariate=c("assay"),type = c(1,0,1,0),control = control)
@@ -123,7 +125,7 @@ xx=max(abs(volcanoData$effects))
 rownames(volcanoData)=c()
 volcanoData
 pp=ggplot(data=volcanoData,aes(x=effects,y=-log10(pvalue)))+
-    geom_point(aes(shape=antigen,color=antibody),size=4)+
+    geom_point(aes(shape=antigen,color=antibody),show.legend=F,size=4)+
      scale_shape_manual(values = shapes)  +
     scale_color_manual(values = colors)+
    theme_classic()+
@@ -155,7 +157,7 @@ xx=max(abs(volcanoData$effects))
 rownames(volcanoData)=c()
 volcanoData
 ggplot(data=volcanoData,aes(x=effects,y=-log10(pvalue)))+
-    geom_point(aes(shape=antigen,color=antibody),size=4)+
+    geom_point(aes(shape=antigen,color=antibody),show.legend=F,size=4)+
      scale_shape_manual(values = shapes)  +
     scale_color_manual(values = colors)+
    theme_classic()+

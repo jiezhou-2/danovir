@@ -102,7 +102,9 @@ colnames(dataset)[15]="antibody"
 dataset$treatment=as.factor(dataset$treatment)
 ```
 
-The basic model in *danovir* is the following one,
+
+
+The basic model in *danovir* is,
 
 $$response_{ijk}=\mu+\alpha_j+\beta_k+\lambda_l+\gamma_{jl}+\gamma_{kl}+
 u_i+e_{ijk}$$
@@ -126,10 +128,13 @@ There are four additional terms that are optional which should be chosen by user
 - Random antibody effects,$u_{ik}$
 
 
-The data frame *dataset* coming with the package is a subset adapted from a large clinical trial which includes two arms,  *NP* for non-pregnant women and *P15* for pregnant women. Both arms received the same type of influenza vaccine shot. In this subset, each arm includes 10 subjects. The aims of the study is to find if pregnant women and non-pregent women have systematic difference in terms of  their state of immune system and immune response. Here for the purpose of demonstration, we use a model with antigen:antibody effects and random antigen/antibody effects.  
+### estimate a given model
+
+We use an example to show how to use function *danovir*. Here 
+the data frame *dataset* coming with the package is a subset adapted from a large clinical trial which includes two arms,  *NP* for non-pregnant women and *P15* for pregnant women. Both arms received the same type of influenza vaccine shot. In this subset, each arm includes 10 subjects. The aims of the study is to find if pregnant women and non-pregent women have systematic difference in terms of  their state of immune system and immune response. Here for the purpose of demonstration, we use a model with antigen:antibody effects and random antigen/antibody effects.  
 
 ```{r,message=FALSE}
-results=danovir(data=dataset,covariate=c("assay"),type = c(1,0,1,1),control = control)
+results1=danovir(data=dataset,covariate=c("assay"),type = c(1,0,1,1),control = control)
 ```
 
 which corresponds to the following mixed-effects model, 
@@ -139,7 +144,7 @@ $$response_{ijk}=\mu+\alpha_j+\beta_k+\lambda_l+\gamma_{jl}+\gamma_{kl}+\gamma_{
 #### model-based volcano
 
 ```{r,echo=FALSE,message=FALSE}
-volcanoData=results$selected
+volcanoData=results1$selected
 volcanoData$fdr=p.adjust(volcanoData$pvalue,method = "BH")
 volcanoData=volcanoData[order(volcanoData$pvalue),]
 
@@ -171,7 +176,7 @@ print(pp)
 #### original volcano
 
 ```{r,echo=FALSE,message=FALSE}
-volcanoData=results$benchmark
+volcanoData=results1$benchmark
 volcanoData$fdr=p.adjust(volcanoData$pvalue,method = "BH")
 volcanoData=volcanoData[order(volcanoData$pvalue),]
 
@@ -200,13 +205,63 @@ ggplot(data=volcanoData,aes(x=effects,y=-log10(pvalue)))+
 ```
 
 
+#### scatter plot for treatment effects estimates 
+
+
 ```{r}
-plot(c(results$selected$effects),c(results$benchmark$effects),xlab = "Model-based effects",ylab = "Original effects")
+plot(c(results1$selected$effects),c(results1$benchmark$effects),xlab = "Model-based effects",ylab = "Original effects")
 abline(coef = c(0,1))
-cor(c(results$selected$effects),c(results$benchmark$effects))
-plot(c(results$selected$variance),c(results$benchmark$variance),
+cor(c(results1$selected$effects),c(results1$benchmark$effects))
+
+```
+
+
+#### scatter plot for variance estimates of treatment effects
+
+```{r}
+plot(c(results1$selected$variance),c(results1$benchmark$variance),
      xlab = "Model-based variances",
      ylab = "Original variances")
 abline(coef = c(0,1))
 ```
+
+
+
+### estimate the full model
+
+Here we estimate another model with different format, and compare the results with the above one which further validates the decision of removing three factor interaction. 
+
+```{r,message=FALSE}
+results2=danovir(data=dataset,covariate=c("assay"),type = c(1,1,1,1),control = control)
+```
+
+which corresponds to the following mixed-effects model, 
+
+$$response_{ijk}=\mu+\alpha_j+\beta_k+\lambda_l+\gamma_{jl}+\gamma_{kl}+\gamma_{jk}+\gamma_{jkl}+u_i+u_{ij}+u_{ik}+e_{ijk}$$
+
+
+#### scatter plot for treatment effects estimates 
+
+
+```{r}
+plot(c(results2$selected$effects),c(results2$benchmark$effects),xlab = "Model-based effects",ylab = "Original effects")
+abline(coef = c(0,1))
+cor(c(results2$selected$effects),c(results2$benchmark$effects))
+
+```
+
+
+
+
+### compare the given model with full model
+
+```{r}
+model1=results1$lmeresults
+model2=results2$lmeresults
+anova(model1,model2)
+```
+
+
+
+**Conclusion**  Due to the removal of the noisy term of three factor interaction, *treatment:antigen:antibody*, we achieve a better tradeoff between biasness and variance which leads to more discoveries based on the model-based method.  
 

@@ -4,7 +4,7 @@
 \alias{danovir}
 \title{Denoised analysis of vaccine-induced immune response}
 \usage{
-danovir(data, type, covariate, ...)
+danovir(data, type, covariate, reproduce = FALSE, ...)
 }
 \arguments{
 \item{data}{data set that include all the relevant variables}
@@ -18,6 +18,10 @@ the second component specifies whether three factor interaction
    \code{antibody} should be included in the random effects.}
 
 \item{covariate}{variables that need to be included in the model}
+
+\item{reproduce}{If true, then model include a random intercept and
+variance of error term is feature wise constant. If false, then model include
+random intercept, antigen effect and antibody effect. Variance of errow term is constant.}
 }
 \value{
 A \code{danovir} object which is a list of length 3. The first

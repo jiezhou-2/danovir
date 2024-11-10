@@ -13,6 +13,9 @@
 #'   in the random effects,  and the fourth component specify whether
 #'    \code{antibody} should be included in the random effects.
 #' @param covariate variables that need to be included in the model
+#' @param reproduce If true, then model include a random intercept and
+#' variance of error term is feature wise constant. If false, then model include
+#' random intercept, antigen effect and antibody effect. Variance of errow term is constant.
 #' @return A \code{danovir} object which is a list of length 3. The first
 #' component  gives the fitting results of the mixed-effects model;
 #' the second component gives the model-based estimates of treatment effects,
@@ -69,12 +72,12 @@
 #'  -  \code{u_{ik}}, random antibody effects
 
 
-danovir=function(data,type,covariate,...){
+danovir=function(data,type,covariate,reproduce=FALSE,...){
   fullnames=colnames(data)
-  if (!all(c("response","subjectid","treatment","antigen","antibody",covariate)
+  if (!all(c("response","subjectid","treatment","assay","antigen","antibody",covariate)
            %in% fullnames)){
     stop("Please re-specify the column names of data which should include variables response,
-         subjectid,treatment,antigen,antibody and all the variables include in
+         subjectid,treatment,assay,antigen,antibody and all the variables include in
          covariate")
   }
 
@@ -255,7 +258,7 @@ if (!all(type%in% c(0,1))){stop("Please specify the model in correct way!")}
       sele=list(antigen=c(2,(nn+1):(nn+n1-1)),antibody=c(2,(nn+n1):(nn+n1-1+n2-1)),
                 three=c(2,(nnn+1):(nnn+(n1-1)*(n2-1))))
     }
-    if (all(type==c(1,1,1,1))){
+    if (all(type==c(1,1,1,1)) & reproduce==FALSE){
       ff=as.formula(paste("response~treatment+ antigen+ antibody+ ",paste(covariate,sep="+"),"+
                     treatment:antigen+treatment:antibody+antigen:antibody+treatment:antigen:antibody"))
       results=lme(fixed=ff,
@@ -264,6 +267,18 @@ if (!all(type%in% c(0,1))){stop("Please specify the model in correct way!")}
       sele=list(antigen=c(2,(nn+1):(nn+n1-1)),antibody=c(2,(nn+n1):(nn+n1-1+n2-1)),
                 three=c(2,(nnn+1):(nnn+(n1-1)*(n2-1))))
     }
+
+      if (all(type==c(1,1,1,1)) & reproduce==TRUE){
+        data$feature=paste0(data$assay,data$antigen,data$detect_reagent,sep="")
+        ff=as.formula(paste("response~treatment+ antigen+ antibody+ ",paste(covariate,sep="+"),"+
+                    treatment:antigen+treatment:antibody+antigen:antibody+treatment:antigen:antibody"))
+        results=lme(fixed=ff,
+                    random=pdDiag(~1),weights= varIdent(form=~1|feature),
+                    data = data,method = "ML",
+                    control = control)
+        sele=list(antigen=c(2,(nn+1):(nn+n1-1)),antibody=c(2,(nn+n1):(nn+n1-1+n2-1)),
+                  three=c(2,(nnn+1):(nnn+(n1-1)*(n2-1))))
+      }
   aa=summary(results)
   names(sele$antigen)=levels(data$antigen)
   names(sele$antibody)=levels(data$antibody)

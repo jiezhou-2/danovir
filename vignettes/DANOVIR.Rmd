@@ -90,7 +90,8 @@ names(shapes)=c("HASK",        "NA",         "HAFL")
 
 
 ```{r setup}
-library(danovir)
+library(devtools)
+load_all()
 ```
 
 
@@ -130,8 +131,28 @@ There are four additional terms that are optional which should be chosen by user
 
 ### Estimate a given model
 
-We use an example to show how to use function *danovir*. Here 
-the data frame *dataset* coming with the package is a subset adapted from a large clinical trial which includes two arms,  *NP* for non-pregnant women and *P15* for pregnant women. Both arms received the same type of influenza vaccine shot. In this subset, each arm includes 10 subjects. The aims of the study is to find if pregnant women and non-pregent women have systematic difference in terms of  their state of immune system and immune response. Here for the purpose of demonstration, we use a model with antigen:antibody effects and random antigen/antibody effects.  
+We use a simulated dataset *dataset* to show how to use function *danovir*.
+The data frame *dataset* has  two arms,  *NP* for non-pregnant women and *P15* for pregnant women. Both arms received the same vaccine shot. Here for the purpose of demonstration, we use a model with antigen:antibody effects and random antigen/antibody effects.  
+
+
+
+```{r,echo=FALSE}
+results1=danovir2(data=dataset,covariate=c("assay"),type = 3,nfold=100,nlambda = 100)
+meanData=data.frame(antigen=results1$selected$antigen,antibody=results1$selected$antibody ,meffects=results1$selected$effects,deffects=results1$benchmark$effects)
+
+
+ggplot(data=meanData,aes(x=meffects,y=deffects))+
+    geom_point(aes(shape=antigen,color=antibody),size=4)+
+     scale_shape_manual(values = shapes)  +
+    scale_color_manual(values = colors)+
+   geom_abline(intercept = 0,slope = 1)+
+  theme(legend.key=element_blank())+
+  labs(x=bquote("model-based method"), y=bquote("original method"))+
+   theme(legend.position = "right",
+          legend.box = "vertical")+
+   guides(color = guide_legend(nrow = 8,title="Detection Reagent"))
+```
+
 
 ```{r,message=FALSE}
 results1=danovir(data=dataset,covariate=c("assay"),type = c(1,0,1,1),control = control)

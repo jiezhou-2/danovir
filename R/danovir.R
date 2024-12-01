@@ -76,7 +76,7 @@ danovir=function(data,type,covariate,reproduce=FALSE,...){
   fullnames=colnames(data)
   if (!all(c("response","subjectid","treatment","assay","antigen","antibody",covariate)
            %in% fullnames)){
-    stop("Please re-specify the column names of data which should include variables response,
+    stop("Please re-specify the column names of data which should include variables **response**,
          subjectid,treatment,assay,antigen,antibody and all the variables include in
          covariate")
   }
@@ -319,3 +319,7 @@ if (!all(type%in% c(0,1))){stop("Please specify the model in correct way!")}
 seleFeature=list(lmeresults=results,selected=seleFeature1,benchmark=seleFeature2)
 return(seleFeature)
 }
+
+
+
+

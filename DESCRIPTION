@@ -16,7 +16,8 @@ Depends:
     R (>= 2.10),
     ggplot2 (>= 3.5.1),
     nlme (>= 3.1),
-    VCA (>= 1.5.1)
+    VCA (>= 1.5.1),
+    glmnet (>= 4.1.8)
 Suggests: 
     knitr (>= 1.46),
     rmarkdown (>= 2.26)

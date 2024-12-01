@@ -1,6 +1,6 @@
 
 
-danovir2=function(treatment,antigen,antibody,covariate=NULL,type=1,
+danovir=function(treatment,antigen,antibody,covariate=NULL,type=1,
                   nfold=10,nlambda=100,data){
 
   fullnames=colnames(data)

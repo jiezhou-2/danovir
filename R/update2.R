@@ -109,6 +109,20 @@ fff=as.formula(paste("response~treatment+ feature+ ",paste(covariate,sep="+"),"+
     varMatrix=diag(1,length(coeVec))
   }
 
+  # if (type==4){
+  #   #gw=gls(model=ff,data = data, weights = varIdent(form=~1|feature),method = "ML")
+  #   mm=model.matrix(lm(ff,data=data))
+  #   response=data$response
+  #   results=glmmLasso(fixed=ff, rnd= ,nfold=nfold,nlambda = nlambda)
+  #   #results=cv.glmnet(x=mm,y=response,nlambda = nlambda)
+  #   #sslambda=ncol(results$glmnet.fit$beta)
+  #   #print(sslambda)
+  #   #print(results$lambda)
+  #   #coeVec=coef(results$glmnet.fit)[-2,sslambda]
+  #   coeVec=coef(results$glmnet.fit)[-2,results$index[1]]
+  #   varMatrix=diag(1,length(coeVec))
+  # }
+
 
 
   sele=list(antigen=c(2,(nn+1):(nn+n1-1)),antibody=c(2,(nn+n1):(nn+n1-1+n2-1)),

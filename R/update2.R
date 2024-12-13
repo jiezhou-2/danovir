@@ -4,7 +4,7 @@ danovir=function(treatment,antigen,antibody,covariate=NULL,type=1,
                   nfold=10,nlambda=100,data){
 
   fullnames=colnames(data)
-  if (!all(c("response","subjectid","treatment","antigen","antibody",covariate)
+  if (!all(c("response","subjectid","treatment","antigen","antibody","feature",covariate)
            %in% fullnames)){
     stop("Please re-specify the column names of data which should include variables **response**,
          subjectid,treatment,assay,antigen,antibody and all the variables include in
@@ -131,22 +131,30 @@ fff=as.formula(paste("response~treatment+ feature+ ",paste(covariate,sep="+"),"+
   names(sele$antibody)=levels(data$antibody)
   bb=contrast(sele=sele,coeVec = coeVec,varMatrix = varMatrix)
 
-  antigen=rownames(bb$effect)
-  antibody=colnames(bb$effect)
-  basic=matrix(nrow=length(antigen),ncol=length(antibody))
-  pp= matrix(nrow=length(antigen),ncol=length(antibody))
-  vv= matrix(nrow=length(antigen),ncol=length(antibody))
-  for (i in 1:length(antigen)) {
-    for (j in 1:length(antibody)) {
-      index=which(data$antigen==antigen[i] & data$antibody==antibody[j])
-      dd=data[index,]
-      x=dd$response[which(dd$treatment==levels(data$treatment)[1])]
-      y=dd$response[which(dd$treatment==levels(data$treatment)[2])]
-      basic[i,j]=t.test(y,x)$estimate[1]-t.test(y,x)$estimate[2]
-      pp[i,j]=t.test(y,x)$p.value
-      vv[i,j]=var(x)/length(x)+var(y)/length(y)
-    }
-  }
+
+  mainEffect2=gls(model=ff,data = data,
+                  weights = varIdent(form=~1|feature),method = "ML")
+  aa=summary(mainEffect2)
+  coeVec1=aa$coefficients
+  varMatrix1=aa$varBeta
+  bbb=contrast(sele=sele,coeVec = coeVec1,varMatrix = varMatrix1)
+
+  # antigen=rownames(bb$effect)
+  # antibody=colnames(bb$effect)
+  # basic=matrix(nrow=length(antigen),ncol=length(antibody))
+  # pp= matrix(nrow=length(antigen),ncol=length(antibody))
+  # vv= matrix(nrow=length(antigen),ncol=length(antibody))
+  # for (i in 1:length(antigen)) {
+  #   for (j in 1:length(antibody)) {
+  #     index=which(data$antigen==antigen[i] & data$antibody==antibody[j])
+  #     dd=data[index,]
+  #     x=dd$response[which(dd$treatment==levels(data$treatment)[1])]
+  #     y=dd$response[which(dd$treatment==levels(data$treatment)[2])]
+  #     basic[i,j]=t.test(y,x)$estimate[1]-t.test(y,x)$estimate[2]
+  #     pp[i,j]=t.test(y,x)$p.value
+  #     vv[i,j]=var(x)/length(x)+var(y)/length(y)
+  #   }
+  # }
 
   seleFeature1=data.frame(antigen=rep(rownames(bb$effect),ncol(bb$effect)),
                           antibody=rep(colnames(bb$effect),rep(nrow(bb$effect),
@@ -157,11 +165,13 @@ fff=as.formula(paste("response~treatment+ feature+ ",paste(covariate,sep="+"),"+
   seleFeature2=data.frame(antigen=rep(rownames(bb$effect),ncol(bb$effect)),
                           antibody=rep(colnames(bb$effect),rep(nrow(bb$effect),
                                                                ncol(bb$effect))),
-                          effects=c(basic),variance=c(vv),pvalue=c(pp))
+                          effects=c(bbb$effect),variance=c(bbb$variance),pvalue=c(bbb$pvalue))
 
-
-  seleFeature=list(lmeresults=results,selected=seleFeature1,benchmark=seleFeature2)
-  return(seleFeature)
+fixedStandard=list(coeVec=coeVec1,varMat=varMatrix1)
+fixedDecomposed=list(coeVec=coeVec,varMat=varMatrix)
+  results=list(fixedStandard=fixedStandard,fixedDecomposed=fixedDecomposed,formula=ff,
+                   selected=seleFeature1,benchmark=seleFeature2)
+  return(results)
 }
 
 

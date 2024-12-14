@@ -7,7 +7,7 @@ danovir=function(treatment,antigen,antibody,covariate=NULL,type=1,
   if (!all(c("response","subjectid","treatment","antigen","antibody","feature",covariate)
            %in% fullnames)){
     stop("Please re-specify the column names of data which should include variables **response**,
-         subjectid,treatment,assay,antigen,antibody and all the variables include in
+         subjectid,treatment,antigen,antibody and all the variables include in
          covariate")
   }
 
@@ -29,7 +29,7 @@ fff=as.formula(paste("response~treatment+ feature+ ",paste(covariate,sep="+"),"+
 
 
 
-  if (length(levels(data$treatment))!=2){
+  if (length(unique(data$treatment))!=2){
     stop("Treatment should have two levels!")
   }
   n1=length(levels(data$antigen))
@@ -56,7 +56,7 @@ fff=as.formula(paste("response~treatment+ feature+ ",paste(covariate,sep="+"),"+
   nnn=nn+
     1*(n1-1)+1*(n2-1)+(n1-1)*(n2-1)  # second order terms
   data=groupedData(response~treatment|subjectid,data=data)
-  if (!all(type%in% c(1,2,3,4))){stop("Please specify the model in correct way!")}
+  #if (!all(type%in% c(1,2,3,4))){stop("Please specify the model in correct way!")}
 
   control$maxIter=10^10
 
@@ -75,6 +75,18 @@ fff=as.formula(paste("response~treatment+ feature+ ",paste(covariate,sep="+"),"+
   if (type==2){
     results=lme(fixed=ff,
                 random=pdDiag(~antigen),
+                weights= varIdent(form=~1|feature),
+                data = data,method = "ML",
+                control = control)
+    aa=summary(results)
+    coeVec=aa$coefficients$fixed
+    varMatrix=aa$varFix
+  }
+
+  if (type==3){
+    results=lme(fixed=ff,
+                random=pdDiag(~antibody),
+                weights= varIdent(form=~1|feature),
                 data = data,method = "ML",
                 control = control)
     aa=summary(results)
@@ -83,37 +95,92 @@ fff=as.formula(paste("response~treatment+ feature+ ",paste(covariate,sep="+"),"+
   }
 
 
-  if (type==3){
-    #gw=gls(model=ff,data = data, weights = varIdent(form=~1|feature),method = "ML")
-    gw=gls(model=ff,data = data,method = "ML")
-    data$res=gw$residuals
-    feature_uniq=unique(data$feature)
-    weigh=c()
-    for (i in 1:length(feature_uniq)) {
-      index=which(data$feature==feature_uniq[i])
-      weigh=c(weigh,1/var(data$res[index]))
-    }
-    wei=data.frame(feature=feature_uniq,weigh=weigh)
-    data=merge(data,wei)
-
-    mm=model.matrix(lm(ff,data=data))
-    response=data$response
-    weigh=data$weigh
-    results=cv.glmnet(x=mm,y=response,weights=weigh,nfold=nfold,nlambda = nlambda)
-    #results=cv.glmnet(x=mm,y=response,nlambda = nlambda)
-    #sslambda=ncol(results$glmnet.fit$beta)
-    #print(sslambda)
-    #print(results$lambda)
-    #coeVec=coef(results$glmnet.fit)[-2,sslambda]
-    coeVec=coef(results$glmnet.fit)[-2,results$index[1]]
-    varMatrix=diag(1,length(coeVec))
+  if (type==4){
+    results=lme(fixed=ff,
+                random=pdDiag(~antigen),
+                weights= varIdent(form=~1|antibody),
+                data = data,method = "ML",
+                control = control)
+    aa=summary(results)
+    coeVec=aa$coefficients$fixed
+    varMatrix=aa$varFix
   }
 
+  if (type==5){
+    results=lme(fixed=ff,
+                random=pdDiag(~antigen),
+                weights= varIdent(form=~1|antigen),
+                data = data,method = "ML",
+                control = control)
+    aa=summary(results)
+    coeVec=aa$coefficients$fixed
+    varMatrix=aa$varFix
+  }
+
+  if (type==6){
+    results=lme(fixed=ff,
+                random=pdDiag(~antibody),
+                weights= varIdent(form=~1|antigen),
+                data = data,method = "ML",
+                control = control)
+    aa=summary(results)
+    coeVec=aa$coefficients$fixed
+    varMatrix=aa$varFix
+  }
+
+  if (type==7){
+    results=lme(fixed=ff,
+                random=pdDiag(~antibody),
+                weights= varIdent(form=~1|antibody),
+                data = data,method = "ML",
+                control = control)
+    aa=summary(results)
+    coeVec=aa$coefficients$fixed
+    varMatrix=aa$varFix
+  }
+
+  if (type==8){
+    results=lme(fixed=ff,
+                random=pdDiag(~antigen+antibody),
+                weights= varIdent(form=~1),
+                data = data,method = "ML",
+                control = control)
+    aa=summary(results)
+    coeVec=aa$coefficients$fixed
+    varMatrix=aa$varFix
+  }
+
+  # if (type==3){
+  #   #gw=gls(model=ff,data = data, weights = varIdent(form=~1|feature),method = "ML")
+  #   gw=gls(model=ff,data = data,method = "ML")
+  #   data$res=gw$residuals
+  #   feature_uniq=unique(data$feature)
+  #   weigh=c()
+  #   for (i in 1:length(feature_uniq)) {
+  #     index=which(data$feature==feature_uniq[i])
+  #     weigh=c(weigh,1/var(data$res[index]))
+  #   }
+  #   wei=data.frame(feature=feature_uniq,weigh=weigh)
+  #   data=merge(data,wei)
+  #
+  #   mm=model.matrix(lm(ff,data=data))
+  #   response=data$response
+  #   weigh=data$weigh
+  #   results=cv.glmnet(x=mm,y=response,weights=weigh,nfold=nfold,nlambda = nlambda)
+  #   #results=cv.glmnet(x=mm,y=response,nlambda = nlambda)
+  #   #sslambda=ncol(results$glmnet.fit$beta)
+  #   #print(sslambda)
+  #   #print(results$lambda)
+  #   #coeVec=coef(results$glmnet.fit)[-2,sslambda]
+  #   coeVec=coef(results$glmnet.fit)[-2,results$index[1]]
+  #   varMatrix=diag(1,length(coeVec))
+  # }
+  #
   # if (type==4){
   #   #gw=gls(model=ff,data = data, weights = varIdent(form=~1|feature),method = "ML")
   #   mm=model.matrix(lm(ff,data=data))
   #   response=data$response
-  #   results=glmmLasso(fixed=ff, rnd= ,nfold=nfold,nlambda = nlambda)
+  #   results=glmmLasso(fix=ff, rnd=list(subjectid~1+antigen),data=data,lambda = lambda)
   #   #results=cv.glmnet(x=mm,y=response,nlambda = nlambda)
   #   #sslambda=ncol(results$glmnet.fit$beta)
   #   #print(sslambda)
